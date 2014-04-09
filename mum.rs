@@ -1,3 +1,7 @@
+use item::{Item,ItemSet};
+
+pub mod item
+
 /*
  * "A schema asserts that if its action is taken when its context
  * conditions are all satisfied, then its result conditions will
@@ -27,6 +31,11 @@
  * schema is applicable, but not activated"
  *
  * TODO: Add extended context and extended results.
+ *
+ * "A schema's auxiliary data (including the content of the extended-
+ * context and extended-result slots are subject to revision, but a schema's
+ * context, action and result uniquely identify that schema and do not 
+ * change."
  */
 struct Schema {
     context: Vec<Item>,
@@ -35,41 +44,12 @@ struct Schema {
     reliability: f64,
     correlation: f64,
     overriding: ???,
+    ext_context: HashMap<uint, Slot>,
+    ext_result: HashMap<uint, Slot>,
 }
 
 type Event = ~str;
 
-#[deriving(Eq)]
-enum ItemState {
-    On,
-    Off,
-    Unknown,
-}
-
-struct Item {
-    state: ItemState,
-    negated: bool,
-    generality: f64, // "rate of being On rather than Off"
-    accessibility: f64, // "rate of being at the end of some chain of schemas"
-    primitiveValue: ???,
-    delegatedValue: ???,
-}
-
-impl ItemState {
-    fn isOn(&self) {
-        self == On
-    }
-
-    fn isOff(&self) {
-        self == Off
-    }
-}
-
-impl Item {
-    fn is_satisfied(&self) -> bool {
-        (self.negated && self.state.isOff()) 
-        || (!self.negated && self.state.isOn())
-    }
 
 /*
  * "A schema's context is said to be *satisfied* when all the positively
@@ -106,38 +86,6 @@ impl Schema {
     }
 }
 
-/*
- * "Schemas compete for activation. At top level, the schema mechanism selects
- * a schema for activation. Selection occurs at each next time unit in the
- * current, discrete-time implementation... In the present implementation,
- * only one schema is activated at a time. However, the activation of a schema
- * that has a composite action entails the immediate activation of some
- * component schema; thes the current implementation supports nested activat-
- * ions."
- */
-fn mechanism() {
-
-}
-
-
-/*
- * "Like a schema's context or result, a composite action's goal state is a
- * set of (positively or negatively included) items."
- */
-
-// I'm wondering whether to do this:
-enum Item {
-    On,
-    Off,
-    Unknown,
-}
-
-struct IncludedItem {
-    item: Item,
-    negated: bool,
-}
-
-type ItemSet = Vec<IncludedItem>;
 
 // TODO: figure out what composite actions are. "A composite action is defined
 // with respect to some *goal state*; it is the action of bringing about that
@@ -154,3 +102,57 @@ struct CompositeAction {
 struct Controller {
     slots: Vec<Slot>,
 }
+
+
+// each item has an associated ID in the "Mechanism". I think this is needed because
+// "each schema has two large ancillary structures, an extended context and an
+// "extended result. Each has a slot for every item in the schema mechanism.",
+// which means we need to have some registry of all the schemas.
+struct Mechanism {
+    items: Vec<(uint, Item)>,
+    actions: Vec<(uint, Action)>,
+    schemas: Vec<(uint, Schema)>,
+}
+
+impl Mechanism {
+    fn new() -> Mechanism {
+        // initialize all primitive items
+    }
+
+    fn synthesize_item() {
+        // create a new item, somehow!
+    }
+
+    fn activate(&mut self, schema_id: uint) {
+        let action_id = the id of the action associated with the schema;
+        let expl_act: Vec<Schema> = all applicable schemas that have the same action as action_id;
+
+    }
+
+    // at each time step, select a schema for activation
+    fn step(&mut self) {
+        let schema_id = select most important schema to activate;
+        self.activate(schema_id);
+
+    }
+}
+
+/*
+ * "Schemas compete for activation. At top level, the schema mechanism selects
+ * a schema for activation. Selection occurs at each next time unit in the
+ * current, discrete-time implementation... In the present implementation,
+ * only one schema is activated at a time. However, the activation of a schema
+ * that has a composite action entails the immediate activation of some
+ * component schema; thes the current implementation supports nested activat-
+ * ions."
+ *
+ * "The top-level selection process chooses among applicable schemas according
+ * to the activation importance they assert. The importance of activating a
+ * given schema is based on two criteria: explicit goal-pursuit, and explorat- 
+ * ion.
+ */
+fn main() {
+
+}
+
+
