@@ -1,6 +1,8 @@
 use item::{Item,ItemSet};
+use world::{World};
 
-pub mod item
+pub mod item;
+pub mod world;
 
 /*
  * "A schema asserts that if its action is taken when its context
@@ -36,19 +38,43 @@ pub mod item
  * context and extended-result slots are subject to revision, but a schema's
  * context, action and result uniquely identify that schema and do not 
  * change."
+ *
+ * p79: "Extended contexts, like extended results, identify relevant items for
+ * inclusion in spinoff schemas. Extended contexts serve a second function:
+ * identifying overriding conditions, that is, conditions under which an
+ * ordinarily reliable schema is invalid." (TODO: is that use of "invalid" inline
+ * with the definition of "valid" for schemas?)
  */
 struct Schema {
     context: Vec<Item>,
-    action: Event,
+    action: Action,
     result: Vec<Item>,
     reliability: f64,
     correlation: f64,
     overriding: ???,
     ext_context: HashMap<uint, Slot>,
-    ext_result: HashMap<uint, Slot>,
+    ext_result: HashMap<uint, ResultSlot>,
 }
 
-type Event = ~str;
+/*
+ * p72: "These statistics are tabulated over a number of trials in which the action
+ * is taken, and a number of trials in which it is not; the more trials there have
+ * been, and the more discrepancy there is between the two probabilities [ratio?]
+ * the sooner the machinery will detect the difference."
+ */
+struct ResultSlot {
+    // P(slot's item turns On when the schema's action has just been taken) 
+    // ---------------------------------------------------------------- 
+    // P(slot's item turns On when schema's action has not been taken)
+    pt_corr: f64, 
+
+    // P(slot's item turns Off when the schema's action has just been taken) 
+    // ---------------------------------------------------------------- 
+    // P(slot's item turns Off when schema's action has not been taken)
+    nt_corr: f64, 
+}
+
+type Action = ~str;
 
 
 /*
@@ -115,8 +141,28 @@ struct Mechanism {
 }
 
 impl Mechanism {
-    fn new() -> Mechanism {
-        // initialize all primitive items
+    fn new(world: World) -> Mechanism {
+        // TODO: I think we are pushing wrong object types here, in all 3 cases
+        let mut items: Vec<(uint, Item)> = vec!();
+
+        for pi in world.prim_items().iter() {
+            items.push(pi);
+        }
+
+        let mut actions: Vec<(uint, Action)> = vec!();
+
+        for pa in world.prim_actions().iter() {
+            actions.push(pa);
+        }
+
+        // initialize bare schemas, one for each action
+        let mut schemas: Vec<(uint, Schema)> = vec!();
+
+        for pa in world.prim_actions().iter() {
+            schemas.push(pa);
+        }
+
+        Mechanism(items: items, actions: actions, schemas: schemas)
     }
 
     fn synthesize_item() {
