@@ -4,7 +4,7 @@
  */
 
 #[deriving(Eq)]
-enum ItemState {
+pub enum ItemState {
     On,
     Off,
     Unknown,
@@ -36,6 +36,22 @@ impl Item {
         Item { state: Off, 
                generality: 0f64, accessibility: 0f64, 
                primitiveValue: 0f64, delegatedValue: 0f64 }
+    }
+
+    pub fn setOff(&mut self) {
+        self.state = Off;
+    }
+
+    pub fn setOn(&mut self) {
+        self.state = On;
+    }
+
+    pub fn isOff(&self) -> bool {
+        self.state.isOff()
+    }
+
+    pub fn isOn(&self) -> bool {
+        self.state.isOn()
     }
 
 }

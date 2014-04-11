@@ -1,4 +1,4 @@
-use item::{Item};
+use item::{Item, On, Off};
 
 use super::{HashMap};
 
@@ -11,7 +11,7 @@ pub trait World {
 
 pub struct GridWorld {
     actions: Vec<~str>,
-    items: HashMap<~str, Item>,
+    pub items: HashMap<~str, Item>,
     hand_pos: (uint, uint),
     glance_pos: (uint, uint),
 }
@@ -107,6 +107,9 @@ impl GridWorld {
             }
         }
 
+        // initialize some items
+        items.find_mut(&~"hp11").unwrap().setOn();
+
         GridWorld { actions: actions, items: items, 
                     hand_pos: (0u, 0u), glance_pos: (0u, 0u) }
     }
@@ -114,6 +117,9 @@ impl GridWorld {
 
     pub fn perform_action(&mut self, action: ~str) {
         if action.slice(0, 4) == "hand" {
+            let key = ~"hp" + GridWorld::coords_tuple_to_str(self.hand_pos);
+            self.turnItemOff(key);
+
             match action.slice(4, 5) {
                 "f" => self.move_hand(Forward),
                 "b" => self.move_hand(Backward),
@@ -121,8 +127,47 @@ impl GridWorld {
                 "l" => self.move_hand(Left),
                 _ => fail!("aghblaghaga"),
             }
+
+            let key = ~"hp" + GridWorld::coords_tuple_to_str(self.hand_pos);
+            self.turnItemOn(key);
         }
 
+    }
+
+    // return None if the item doesn't exist
+    pub fn isItemOn(&self, name: ~str) -> Option<bool> {
+        let find = self.items.find(&name);
+
+        match self.items.find(&name) {
+            None => None,
+            Some(item) => Some(item.isOn()),
+        }
+    }
+
+
+    // return None if the item doesn't exist
+    pub fn isItemOff(&self, name: ~str) -> Option<bool> {
+        let find = self.items.find(&name);
+
+        match self.items.find(&name) {
+            None => None,
+            Some(item) => Some(item.isOff()),
+        }
+    }
+
+
+    fn turnItemOff(&mut self, name: ~str) {
+        let item_ref = self.items.find_mut(&name).unwrap();
+        item_ref.setOff();
+    }
+
+    fn turnItemOn(&mut self, name: ~str) {
+        let item_ref = self.items.find_mut(&name).unwrap();
+        item_ref.setOn();
+    }
+
+    fn coords_tuple_to_str(tup: (uint, uint)) -> ~str {
+        tup.val0().to_str() + tup.val1().to_str()
     }
 
 
