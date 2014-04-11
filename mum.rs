@@ -1,8 +1,13 @@
+extern crate collections;
+
+pub use collections::HashMap;
+
 use item::{Item,ItemSet};
 use world::{World};
 
 pub mod item;
 pub mod world;
+mod test;
 
 /*
  * "A schema asserts that if its action is taken when its context
@@ -46,13 +51,13 @@ pub mod world;
  * with the definition of "valid" for schemas?)
  */
 struct Schema {
-    context: Vec<Item>,
+    context: ItemSet,
     action: Action,
-    result: Vec<Item>,
+    result: ItemSet,
     reliability: f64,
     correlation: f64,
-    overriding: ???,
-    ext_context: HashMap<uint, Slot>,
+    //overriding: ???,
+    //ext_context: HashMap<uint, Slot>,
     ext_result: HashMap<uint, ResultSlot>,
 }
 
@@ -140,12 +145,14 @@ impl Schema {
     }
 }
 
+/*
 
 // each item has an associated ID in the "Mechanism". I think this is needed because
 // "each schema has two large ancillary structures, an extended context and an
 // "extended result. Each has a slot for every item in the schema mechanism.",
 // which means we need to have some registry of all the schemas.
 struct Mechanism {
+    world: World,
     items: Vec<(uint, Item)>,
     actions: Vec<(uint, Action)>,
     schemas: Vec<(uint, Schema)>,
@@ -173,7 +180,7 @@ impl Mechanism {
             schemas.push(pa);
         }
 
-        Mechanism(items: items, actions: actions, schemas: schemas)
+        Mechanism(world: world, items: items, actions: actions, schemas: schemas)
     }
 
     fn synthesize_item() {
@@ -196,6 +203,7 @@ impl Mechanism {
 
     }
 }
+*/
 
 /*
  * "Schemas compete for activation. At top level, the schema mechanism selects

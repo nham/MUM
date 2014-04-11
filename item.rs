@@ -11,11 +11,11 @@ enum ItemState {
 }
 
 impl ItemState {
-    fn isOn(&self) {
+    fn isOn(self) -> bool {
         self == On
     }
 
-    fn isOff(&self) {
+    fn isOff(self) -> bool {
         self == Off
     }
 }
@@ -28,8 +28,8 @@ pub struct Item {
     state: ItemState,
     generality: f64, // "rate of being On rather than Off"
     accessibility: f64, // "rate of being at the end of some chain of schemas"
-    primitiveValue: f64 // "Built-in positive or negative desirability measure"
-    delegatedValue: f64 // "Acquired positive or negative desirability measure"
+    primitiveValue: f64, // "Built-in positive or negative desirability measure"
+    delegatedValue: f64, // "Acquired positive or negative desirability measure"
 }
 
 impl Item {
@@ -39,15 +39,18 @@ impl Item {
                primitiveValue: 0f64, delegatedValue: 0f64 }
     }
 
-    fn is_satisfied(&self) -> bool {
-        (self.negated && self.state.isOff()) 
-        || (!self.negated && self.state.isOn())
-    }
 }
 
 struct IncludedItem {
     item: Item,
     negated: bool,
+}
+
+impl IncludedItem {
+    pub fn is_satisfied(&self) -> bool {
+        (self.negated && self.item.state.isOff()) 
+        || (!self.negated && self.item.state.isOn())
+    }
 }
 
 

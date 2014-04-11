@@ -1,15 +1,18 @@
 use item::{Item};
 
+use super::{HashMap};
+
 pub trait World {
-    fn prim_actions() -> Vec<~str>;
-    fn prim_items() -> Vec<Item>;
+    fn prim_actions(&self) -> Vec<~str>;
+    fn prim_items(&self) -> Vec<Item>;
 }
 
-struct GridWorld {
+pub struct GridWorld {
     actions: Vec<~str>,
     items: Vec<Item>,
     hand_pos: (uint, uint),
     glance_pos: (uint, uint),
+    //item_list: HashMap<~str, uint>, // gives the id of each
 }
 
 enum GridDir {
@@ -20,10 +23,12 @@ enum GridDir {
 }
 
 impl GridWorld {
-    fn new() -> GridWorld {
+    pub fn new() -> GridWorld {
         let actions = vec!(~"handf", ~"handb", ~"handr", ~"handl",
                            ~"eyef", ~"eyeb", ~"eyer", ~"eyel",
                            ~"grasp", ~"ungrasp");
+
+        let items = vec!();
 
         let mut id = 0u;
 
@@ -91,9 +96,21 @@ impl GridWorld {
             id += 1;
         }
 
+        GridWorld { actions: actions, items: items, 
+                    hand_pos: (0u, 0u), glance_pos: (0u, 0u) }
+
     }
 
     fn perform_action(&mut self, action: ~str) {
+        if action.slice(0, 4) == "hand" {
+            match action.slice(4, 5) {
+                "f" => self.move_hand(Forward),
+                "b" => self.move_hand(Backward),
+                "r" => self.move_hand(Right),
+                "l" => self.move_hand(Left),
+                _ => fail!("aghblaghaga"),
+            }
+        }
 
     }
 
@@ -101,10 +118,10 @@ impl GridWorld {
         let x = self.hand_pos.val0();
         let y = self.hand_pos.val1();
         match dir {
-            Forward => { self.hand_pos = (inc_grid_pos(x), y); },
-            Backward => { self.hand_pos = (dec_grid_pos(x), y); },
-            Right => { self.hand_pos = (x, inc_grid_pos(y)); },
-            Left => { self.hand_pos = (x, dec_grid_pos(y)); },
+            Forward => { self.hand_pos = (GridWorld::inc_grid_pos(x), y); },
+            Backward => { self.hand_pos = (GridWorld::dec_grid_pos(x), y); },
+            Right => { self.hand_pos = (x, GridWorld::inc_grid_pos(y)); },
+            Left => { self.hand_pos = (x, GridWorld::dec_grid_pos(y)); },
         }
     }
 
@@ -112,10 +129,10 @@ impl GridWorld {
         let x = self.glance_pos.val0();
         let y = self.glance_pos.val1();
         match dir {
-            Forward => { self.glance_pos = (inc_grid_pos(x), y); },
-            Backward => { self.glance_pos = (dec_grid_pos(x), y); },
-            Right => { self.glance_pos = (x, inc_grid_pos(y)); },
-            Left => { self.glance_pos = (x, dec_grid_pos(y)); },
+            Forward => { self.glance_pos = (GridWorld::inc_grid_pos(x), y); },
+            Backward => { self.glance_pos = (GridWorld::dec_grid_pos(x), y); },
+            Right => { self.glance_pos = (x, GridWorld::inc_grid_pos(y)); },
+            Left => { self.glance_pos = (x, GridWorld::dec_grid_pos(y)); },
         }
     }
 
@@ -141,7 +158,7 @@ impl World for GridWorld {
         self.actions
     }
 
-    fn prim_items() -> Vec<~str> {
+    fn prim_items(&self) -> Vec<Item> {
         self.items
     }
 }
