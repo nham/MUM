@@ -33,6 +33,12 @@ pub struct Item {
 }
 
 impl Item {
+    pub fn new(id: uint) -> Item {
+        Item { id: id, state: Off, 
+               generality: 0f64, accessibility: 0f64, 
+               primitiveValue: 0f64, delegatedValue: 0f64 }
+    }
+
     fn is_satisfied(&self) -> bool {
         (self.negated && self.state.isOff()) 
         || (!self.negated && self.state.isOn())

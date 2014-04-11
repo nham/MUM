@@ -74,7 +74,35 @@ struct ResultSlot {
     nt_corr: f64, 
 }
 
-type Action = ~str;
+enum Action {
+    Primitive(~str),
+    Composite(CompositeAction),
+}
+
+
+// TODO: figure out what composite actions are. "A composite action is defined
+// with respect to some *goal state*; it is the action of bringing about that
+// state... Each composite action has an associated *controller*. Just as a
+// schema's extended context and extended result have a slot for every extant
+// item, a composite action's controller has a slot for every schema. Each
+// slot contains data about whether the schema lies along some chain to the
+// goal state, and, if so, the *proximity* to the goal that will be achieved
+// if the schema is activated."
+struct CompositeAction {
+    goal_state: ItemSet,
+    controller: Controller
+}
+
+struct CompositeActionSlot {
+    lies_along_chain: bool,
+    proximity: Option<f64>,
+}
+
+// one slot for each schema
+struct Controller {
+    slots: Vec<(uint, CompositeActionSlot)>,
+}
+
 
 
 /*
@@ -110,23 +138,6 @@ impl Schema {
     fn activate(&mut self) {
 
     }
-}
-
-
-// TODO: figure out what composite actions are. "A composite action is defined
-// with respect to some *goal state*; it is the action of bringing about that
-// state... Each composite action has an associated *controller*. Just as a
-// schema's extended context and extended result have a slot for every extant
-// item, a composite action's controller has a slot for every schema. Each
-// slot contains data about whether the schema lies along some chain to the
-// goal state, and, if so, the *proximity* to the goal that will be achieved
-// if the schema is activated."
-struct CompositeAction {
-    controller: Controller
-}
-
-struct Controller {
-    slots: Vec<Slot>,
 }
 
 
@@ -172,6 +183,9 @@ impl Mechanism {
     fn activate(&mut self, schema_id: uint) {
         let action_id = the id of the action associated with the schema;
         let expl_act: Vec<Schema> = all applicable schemas that have the same action as action_id;
+
+        // I think activation just means, fundamentally, taking some primitive action (or sequence
+        // of primitive actions?) fundamentally, actions affect the world.
 
     }
 
