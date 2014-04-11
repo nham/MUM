@@ -24,7 +24,6 @@ impl ItemState {
 // world, and has a state of On or Off to assert respectively that the
 // condition does or does not currently obtain..."
 pub struct Item {
-    id: uint,
     state: ItemState,
     generality: f64, // "rate of being On rather than Off"
     accessibility: f64, // "rate of being at the end of some chain of schemas"
@@ -33,8 +32,8 @@ pub struct Item {
 }
 
 impl Item {
-    pub fn new(id: uint) -> Item {
-        Item { id: id, state: Off, 
+    pub fn new() -> Item {
+        Item { state: Off, 
                generality: 0f64, accessibility: 0f64, 
                primitiveValue: 0f64, delegatedValue: 0f64 }
     }

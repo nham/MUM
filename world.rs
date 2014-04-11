@@ -2,17 +2,18 @@ use item::{Item};
 
 use super::{HashMap};
 
+/*
 pub trait World {
     fn prim_actions(&self) -> Vec<~str>;
     fn prim_items(&self) -> Vec<Item>;
 }
+*/
 
 pub struct GridWorld {
     actions: Vec<~str>,
-    items: Vec<Item>,
+    items: HashMap<~str, Item>,
     hand_pos: (uint, uint),
     glance_pos: (uint, uint),
-    //item_list: HashMap<~str, uint>, // gives the id of each
 }
 
 enum GridDir {
@@ -28,80 +29,90 @@ impl GridWorld {
                            ~"eyef", ~"eyeb", ~"eyer", ~"eyel",
                            ~"grasp", ~"ungrasp");
 
-        let items = vec!();
+        let mut items = HashMap::new();
 
-        let mut id = 0u;
 
         // hp11-hp33
-        let mut hp = vec!();
-        for i in range(0, 9) {
-            hp.push( Item::new(id) );
-            id += 1;
+        for i in range(1, 4) {
+            for j in range(1, 4) {
+                items.insert(~"hp" + i.to_str() + j.to_str(), Item::new());
+            }
         }
 
         // vp11-vp33
-        let mut vp = vec!();
-        for i in range(0, 9) {
-            vp.push( Item::new(id) );
-            id += 1;
+        for i in range(1, 4) {
+            for j in range(1, 4) {
+                items.insert(~"vp" + i.to_str() + j.to_str(), Item::new());
+            }
         }
 
         // tactf-tactl
-        let mut tact = vec!();
-        for i in range(0, 4) {
-            tact.push( Item::new(id) );
-            id += 1;
-        }
+        items.insert(~"tactf", Item::new());
+        items.insert(~"tactb", Item::new());
+        items.insert(~"tactr", Item::new());
+        items.insert(~"tactl", Item::new());
 
         // text0-text3
-        let mut text = vec!();
         for i in range(0, 4) {
-            text.push( Item::new(id) );
-            id += 1;
+            items.insert(~"text" + i.to_str(), Item::new());
         }
 
         // bodyf-bodyl
-        let mut body = vec!();
-        for i in range(0, 4) {
-            body.push( Item::new(id) );
-            id += 1;
-        }
+        items.insert(~"bodyf", Item::new());
+        items.insert(~"bodyb", Item::new());
+        items.insert(~"bodyr", Item::new());
+        items.insert(~"bodyl", Item::new());
 
         // taste0-taste3
-        let mut taste = vec!();
         for i in range(0, 4) {
-            taste.push( Item::new(id) );
-            id += 1;
+            items.insert(~"taste" + i.to_str(), Item::new());
         }
         
         // hcl, hgr
-        let mut hand = vec!();
-        for i in range(0, 2) {
-            hand.push( Item::new(id) );
-            id += 1;
-        }
+        items.insert(~"hcl", Item::new());
+        items.insert(~"hgr", Item::new());
 
         // vf00-vf44
-        let mut vf = vec!();
-        for i in range(0, 25) {
-            vf.push( Item::new(id) );
-            id += 1;
+        for i in range(0, 5) {
+            for j in range(0, 5) {
+                items.insert(~"vf" + i.to_str() + j.to_str(), Item::new());
+            }
         }
 
         // fovf00-fovf33, ..., fovx00-fovx33
         // 16 each for f,b,r,l,x
-        let mut fovea = vec!();
-        for i in range(0, 80) {
-            fovea.push( Item::new(id) );
-            id += 1;
+        for i in range(0, 4) {
+            for j in range(0, 4) {
+                items.insert(~"fovf" + i.to_str() + j.to_str(), Item::new());
+            }
+        }
+        for i in range(0, 4) {
+            for j in range(0, 4) {
+                items.insert(~"fovb" + i.to_str() + j.to_str(), Item::new());
+            }
+        }
+        for i in range(0, 4) {
+            for j in range(0, 4) {
+                items.insert(~"fovr" + i.to_str() + j.to_str(), Item::new());
+            }
+        }
+        for i in range(0, 4) {
+            for j in range(0, 4) {
+                items.insert(~"fovl" + i.to_str() + j.to_str(), Item::new());
+            }
+        }
+        for i in range(0, 4) {
+            for j in range(0, 4) {
+                items.insert(~"fovx" + i.to_str() + j.to_str(), Item::new());
+            }
         }
 
         GridWorld { actions: actions, items: items, 
                     hand_pos: (0u, 0u), glance_pos: (0u, 0u) }
-
     }
 
-    fn perform_action(&mut self, action: ~str) {
+
+    pub fn perform_action(&mut self, action: ~str) {
         if action.slice(0, 4) == "hand" {
             match action.slice(4, 5) {
                 "f" => self.move_hand(Forward),
@@ -113,6 +124,7 @@ impl GridWorld {
         }
 
     }
+
 
     fn move_hand(&mut self, dir: GridDir) {
         let x = self.hand_pos.val0();
@@ -153,6 +165,7 @@ impl GridWorld {
     }
 }
 
+/*
 impl World for GridWorld {
     fn prim_actions(&self) -> Vec<~str> {
         self.actions
@@ -162,3 +175,4 @@ impl World for GridWorld {
         self.items
     }
 }
+*/

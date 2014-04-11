@@ -3,7 +3,7 @@ extern crate collections;
 pub use collections::HashMap;
 
 use item::{Item,ItemSet};
-use world::{World};
+//use world::{World};
 
 pub mod item;
 pub mod world;
