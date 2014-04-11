@@ -111,7 +111,7 @@ impl GridWorld {
         items.find_mut(&~"hp11").unwrap().setOn();
 
         GridWorld { actions: actions, items: items, 
-                    hand_pos: (0u, 0u), glance_pos: (0u, 0u) }
+                    hand_pos: (1u, 1u), glance_pos: (1u, 1u) }
     }
 
 
@@ -136,7 +136,6 @@ impl GridWorld {
 
     // return None if the item doesn't exist
     pub fn isItemOn(&self, name: ~str) -> Option<bool> {
-        let find = self.items.find(&name);
 
         match self.items.find(&name) {
             None => None,
@@ -147,7 +146,6 @@ impl GridWorld {
 
     // return None if the item doesn't exist
     pub fn isItemOff(&self, name: ~str) -> Option<bool> {
-        let find = self.items.find(&name);
 
         match self.items.find(&name) {
             None => None,
@@ -175,10 +173,10 @@ impl GridWorld {
         let x = self.hand_pos.val0();
         let y = self.hand_pos.val1();
         match dir {
-            Forward => { self.hand_pos = (GridWorld::inc_grid_pos(x), y); },
-            Backward => { self.hand_pos = (GridWorld::dec_grid_pos(x), y); },
-            Right => { self.hand_pos = (x, GridWorld::inc_grid_pos(y)); },
-            Left => { self.hand_pos = (x, GridWorld::dec_grid_pos(y)); },
+            Forward => { self.hand_pos = (x, GridWorld::inc_grid_pos(y)); },
+            Backward => { self.hand_pos = (x, GridWorld::dec_grid_pos(y)); },
+            Right => { self.hand_pos = (GridWorld::inc_grid_pos(x), y); },
+            Left => { self.hand_pos = (GridWorld::dec_grid_pos(x), y); },
         }
     }
 
@@ -186,10 +184,10 @@ impl GridWorld {
         let x = self.glance_pos.val0();
         let y = self.glance_pos.val1();
         match dir {
-            Forward => { self.glance_pos = (GridWorld::inc_grid_pos(x), y); },
-            Backward => { self.glance_pos = (GridWorld::dec_grid_pos(x), y); },
-            Right => { self.glance_pos = (x, GridWorld::inc_grid_pos(y)); },
-            Left => { self.glance_pos = (x, GridWorld::dec_grid_pos(y)); },
+            Forward => { self.glance_pos = (x, GridWorld::inc_grid_pos(y)); },
+            Backward => { self.glance_pos = (x, GridWorld::dec_grid_pos(y)); },
+            Right => { self.glance_pos = (GridWorld::inc_grid_pos(x), y); },
+            Left => { self.glance_pos = (GridWorld::dec_grid_pos(x), y); },
         }
     }
 
