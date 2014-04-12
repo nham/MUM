@@ -1,4 +1,4 @@
-use item::{Item, On, Off};
+use item::{Item};
 
 use super::{HashMap};
 

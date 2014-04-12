@@ -204,7 +204,7 @@ fn world_gridworld_perform_action_eye() {
          && gw.isItemOff(~"vp22").unwrap()
          && gw.isItemOff(~"vp23").unwrap()
          && gw.isItemOff(~"vp31").unwrap()
-         && gw.isItemOff(~"vp32").unwrap(
+         && gw.isItemOff(~"vp32").unwrap()
          && gw.isItemOff(~"vp33").unwrap()
     );
 
