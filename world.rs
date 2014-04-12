@@ -109,6 +109,7 @@ impl GridWorld {
 
         // initialize some items
         items.find_mut(&~"hp11").unwrap().setOn();
+        items.find_mut(&~"vp11").unwrap().setOn();
 
         GridWorld { actions: actions, items: items, 
                     hand_pos: (1u, 1u), glance_pos: (1u, 1u) }
@@ -117,6 +118,7 @@ impl GridWorld {
 
     pub fn perform_action(&mut self, action: ~str) {
         if action.slice(0, 4) == "hand" {
+
             let key = ~"hp" + GridWorld::coords_tuple_to_str(self.hand_pos);
             self.turnItemOff(key);
 
@@ -130,6 +132,23 @@ impl GridWorld {
 
             let key = ~"hp" + GridWorld::coords_tuple_to_str(self.hand_pos);
             self.turnItemOn(key);
+
+        } else if action.slice(0, 3) == "eye" {
+
+            let key = ~"vp" + GridWorld::coords_tuple_to_str(self.glance_pos);
+            self.turnItemOff(key);
+
+            match action.slice(3, 4) {
+                "f" => self.move_glance(Forward),
+                "b" => self.move_glance(Backward),
+                "r" => self.move_glance(Right),
+                "l" => self.move_glance(Left),
+                _ => fail!("aghblaghaga"),
+            }
+
+            let key = ~"vp" + GridWorld::coords_tuple_to_str(self.glance_pos);
+            self.turnItemOn(key);
+
         }
 
     }
