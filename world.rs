@@ -2,12 +2,10 @@ use item::{Item};
 
 use super::{HashMap};
 
-/*
 pub trait World {
     fn prim_actions(&self) -> Vec<~str>;
     fn prim_items(&self) -> Vec<Item>;
 }
-*/
 
 pub struct GridWorld {
     actions: Vec<~str>,
@@ -227,14 +225,12 @@ impl GridWorld {
     }
 }
 
-/*
 impl World for GridWorld {
     fn prim_actions(&self) -> Vec<~str> {
-        self.actions
+        self.actions.clone()
     }
 
     fn prim_items(&self) -> Vec<Item> {
-        self.items
+        self.items.clone()
     }
 }
-*/

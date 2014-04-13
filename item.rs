@@ -72,3 +72,15 @@ impl IncludedItem {
 // Structure for contexts and results.
 pub type ItemSet = Vec<IncludedItem>;
 
+impl Vec<IncludedItem> {
+    pub fn is_satisfied(&self) -> bool {
+        for item in self.iter() {
+            if !item.is_satisfied() {
+                return false;
+            }
+        }
+
+        true
+    }
+}
+

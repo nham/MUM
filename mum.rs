@@ -2,8 +2,8 @@ extern crate collections;
 
 pub use collections::HashMap;
 
-use item::{Item,ItemSet};
-//use world::{World};
+use item::{Item,ItemSet, ItemState, On, Off};
+use world::{World};
 
 pub mod item;
 pub mod world;
@@ -57,8 +57,17 @@ struct Schema {
     reliability: f64,
     correlation: f64,
     //overriding: ???,
-    //ext_context: HashMap<uint, Slot>,
-    ext_result: HashMap<uint, ResultSlot>,
+    ext_context: HashMap<uint, ContextSlot>,
+    ext_result: HashMap<~str, ResultSlot>,
+}
+
+struct ContextSlot {
+    // as with extended-result statistics, [the ratio is] weighted toward
+    // more recent trials
+    ratio: f64, // ratio of P(schema will succeed | schema activated when slot's item is On) / P(schema will succeed | ischema activated when slot's item is Off)
+
+    overrides: Option<ItemState>, //  determines whether the item being On or Off
+                                  // overrides the applicability of the schema
 }
 
 /*
@@ -111,9 +120,6 @@ struct Controller {
 
 
 /*
- * "A schema's context is said to be *satisfied* when all the positively
- * included items are On and all the negatively included items Off"
- *
  * "A schema is said to be *applicable* when its context is satisfied and
  * no known overriding conditions obtain."
  *
@@ -125,13 +131,7 @@ struct Controller {
 // "A synthetic item reifies the validity conditions of its host schema"
 impl Schema {
     fn is_applicable(&self) -> bool {
-        for i in self.context.iter() {
-            if !i.is_satisfied() {
-                return false;
-            }
-        }
-
-        true
+        self.context.is_satisfied() && true // no overriding conditions
     }
 
     /*
@@ -145,7 +145,6 @@ impl Schema {
     }
 }
 
-/*
 
 // each item has an associated ID in the "Mechanism". I think this is needed because
 // "each schema has two large ancillary structures, an extended context and an
@@ -153,36 +152,33 @@ impl Schema {
 // which means we need to have some registry of all the schemas.
 struct Mechanism {
     world: World,
-    items: Vec<(uint, Item)>,
-    actions: Vec<(uint, Action)>,
+    items: HashMap<~str, Item>,
+    actions: Vec<Action>,
     schemas: Vec<(uint, Schema)>,
 }
 
 impl Mechanism {
     fn new(world: World) -> Mechanism {
-        // TODO: I think we are pushing wrong object types here, in all 3 cases
-        let mut items: Vec<(uint, Item)> = vec!();
-
-        for pi in world.prim_items().iter() {
-            items.push(pi);
-        }
-
-        let mut actions: Vec<(uint, Action)> = vec!();
-
-        for pa in world.prim_actions().iter() {
-            actions.push(pa);
-        }
 
         // initialize bare schemas, one for each action
         let mut schemas: Vec<(uint, Schema)> = vec!();
 
         for pa in world.prim_actions().iter() {
-            schemas.push(pa);
+            schemas.push(
+                Schema { context: vec!(),
+                         action: Primitive(pa),
+                         result: vec!(),
+                         reliability: 0f64,
+                         correlation: 0f64,
+                         ext_result: _,
+                }
+            );
         }
 
         Mechanism(world: world, items: items, actions: actions, schemas: schemas)
     }
 
+/*
     fn synthesize_item() {
         // create a new item, somehow!
     }
@@ -202,8 +198,8 @@ impl Mechanism {
         self.activate(schema_id);
 
     }
-}
 */
+}
 
 /*
  * "Schemas compete for activation. At top level, the schema mechanism selects
